@@ -1,0 +1,1131 @@
+[
+    {
+        "id": "6e8c89a756076ea7",
+        "type": "tab",
+        "label": "Progauge",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "e0a2b3c4d5e6f7a8",
+        "type": "inject",
+        "z": "6e8c89a756076ea7",
+        "name": "Generate Data",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "[{\"time\":\"2025-09-26 15:00:00\",\"pressure\":100,\"temperature\":29},{\"time\":\"2025-09-26 15:01:00\",\"pressure\":101,\"temperature\":26}]",
+        "payloadType": "json",
+        "x": 160,
+        "y": 120,
+        "wires": [
+            [
+                "f1g2h3i4j5k6l7m8"
+            ]
+        ]
+    },
+    {
+        "id": "f1g2h3i4j5k6l7m8",
+        "type": "csv",
+        "z": "6e8c89a756076ea7",
+        "name": "Convert to CSV",
+        "sep": ",",
+        "hdrin": false,
+        "multi": "false",
+        "temp": "",
+        "skip": 0,
+        "strings": true,
+        "include_empty_strings": false,
+        "include_null_values": false,
+        "x": 370,
+        "y": 120,
+        "wires": [
+            [
+                "g9h0i1j2k3l4m5n6"
+            ]
+        ]
+    },
+    {
+        "id": "g9h0i1j2k3l4m5n6",
+        "type": "file",
+        "z": "6e8c89a756076ea7",
+        "name": "Write to CSV",
+        "filename": "/tmp/data.csv",
+        "filenameType": "str",
+        "createDir": "false",
+        "overwriteFile": "false",
+        "encoding": "UTF8",
+        "x": 580,
+        "y": 120,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "q7r8s9t0.u1v2w3x4",
+        "type": "csv",
+        "z": "6e8c89a756076ea7",
+        "name": "Parse CSV",
+        "sep": ",",
+        "hdrin": true,
+        "hdrout": "none",
+        "multi": "multiobj",
+        "ret": "array",
+        "temp": "",
+        "skip": 0,
+        "strings": true,
+        "x": 610,
+        "y": 260,
+        "wires": [
+            [
+                "08fdf3130d1ea123"
+            ]
+        ]
+    },
+    {
+        "id": "y5z6a7b8.c9d0e1f2",
+        "type": "debug",
+        "z": "6e8c89a756076ea7",
+        "name": "Debug Output",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 780,
+        "y": 340,
+        "wires": []
+    },
+    {
+        "id": "08fdf3130d1ea123",
+        "type": "function",
+        "z": "6e8c89a756076ea7",
+        "name": "function 4",
+        "func": "let m=msg.payload[0];\n//F=(C × 9/5) + 32\n//in=mm *0.03937;\n//G=L *0.264172;\nmsg.payload={\n    ibank:m.ibank,\n    DateTime:m.DateTime,\n    Tank:m.Tank,\n    Volume:m.QTY*0.264172,\n    Temperature:(m.Temperature  * 9/5) + 32,\n    \"Water Volume\":m.Water*0.264172,\n    Height:m.Height*0.03937\n    }\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 580,
+        "y": 340,
+        "wires": [
+            [
+                "y5z6a7b8.c9d0e1f2",
+                "c757b7fc27749e09",
+                "93d89ab586458d0f",
+                "43294b764ad1c94e",
+                "0e9b50acc6d678ed"
+            ]
+        ]
+    },
+    {
+        "id": "885fe6427b942894",
+        "type": "fs-list",
+        "z": "6e8c89a756076ea7",
+        "name": "",
+        "path": "C:\\Users\\meltahawey\\Desktop\\ftptest\\f2\\",
+        "pathType": "str",
+        "pattern": "stockLevels*.*",
+        "patternType": "str",
+        "filter": "all",
+        "recursive": false,
+        "follow": true,
+        "property": "payload",
+        "propertyType": "msg",
+        "x": 240,
+        "y": 360,
+        "wires": [
+            [
+                "441035474c87ea00"
+            ]
+        ]
+    },
+    {
+        "id": "49e26aec28a8400d",
+        "type": "inject",
+        "z": "6e8c89a756076ea7",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "60",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 150,
+        "y": 300,
+        "wires": [
+            [
+                "885fe6427b942894",
+                "f336b9d02f416736"
+            ]
+        ]
+    },
+    {
+        "id": "441035474c87ea00",
+        "type": "function",
+        "z": "6e8c89a756076ea7",
+        "name": "function 5",
+        "func": "let m=msg.payload;\nlet kK=[];\n//for (let i=0;i<m.length;i++){kK[i]=m[i].substring(m[i].length-10,m[i].length-4);}\nmsg.payload=\"C:\\\\Users\\\\meltahawey\\\\Desktop\\\\ftptest\\\\f2\\\\\"+m[m.length-1];\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 380,
+        "y": 360,
+        "wires": [
+            [
+                "4b22f4ef987d9fa0"
+            ]
+        ]
+    },
+    {
+        "id": "4b22f4ef987d9fa0",
+        "type": "file in",
+        "z": "6e8c89a756076ea7",
+        "name": "Read CSV",
+        "filename": "payload",
+        "filenameType": "msg",
+        "format": "utf8",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "none",
+        "allProps": false,
+        "x": 370,
+        "y": 300,
+        "wires": [
+            [
+                "q7r8s9t0.u1v2w3x4"
+            ]
+        ]
+    },
+    {
+        "id": "1f6efc3ca111a43b",
+        "type": "inject",
+        "z": "6e8c89a756076ea7",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 80,
+        "y": 40,
+        "wires": [
+            [
+                "29346bcbc81f8f67"
+            ]
+        ]
+    },
+    {
+        "id": "29346bcbc81f8f67",
+        "type": "file in",
+        "z": "6e8c89a756076ea7",
+        "name": "Read CSV",
+        "filename": "C:\\Users\\meltahawey\\Desktop\\ftptest\\f2\\stockLevels_44_2025-09-26_153911.csv",
+        "filenameType": "str",
+        "format": "utf8",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "none",
+        "allProps": false,
+        "x": 230,
+        "y": 40,
+        "wires": [
+            [
+                "f236b9dd5ffe884a"
+            ]
+        ]
+    },
+    {
+        "id": "f236b9dd5ffe884a",
+        "type": "csv",
+        "z": "6e8c89a756076ea7",
+        "name": "Parse CSV",
+        "sep": ",",
+        "hdrin": true,
+        "hdrout": "none",
+        "multi": "multiobj",
+        "ret": "array",
+        "temp": "",
+        "skip": 0,
+        "strings": true,
+        "x": 450,
+        "y": 40,
+        "wires": [
+            [
+                "dde3bde8e1711674"
+            ]
+        ]
+    },
+    {
+        "id": "dde3bde8e1711674",
+        "type": "function",
+        "z": "6e8c89a756076ea7",
+        "name": "function 6",
+        "func": "let m=msg.payload[0];\n//F=(C × 9/5) + 32\n//in=mm *0.03937;\n//G=L *0.264172;\nmsg.payload={\n    ibank:m.ibank,\n    DateTime:m.DateTime,\n    Tank:m.Tank,\n    Volume:m.QTY*0.264172,\n    Temperature:(m.Temperature  * 9/5) + 32,\n    \"Water Volume\":m.Water*0.264172,\n    Height:m.Height*0.03937\n    }\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 600,
+        "y": 40,
+        "wires": [
+            [
+                "b8cc8565c9435868"
+            ]
+        ]
+    },
+    {
+        "id": "b8cc8565c9435868",
+        "type": "debug",
+        "z": "6e8c89a756076ea7",
+        "name": "Debug Output",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 700,
+        "y": 80,
+        "wires": []
+    },
+    {
+        "id": "eca8fd0713d371cd",
+        "type": "ui_gauge",
+        "z": "6e8c89a756076ea7",
+        "name": "",
+        "group": "c185fd3c0889c0f1",
+        "order": 1,
+        "width": 5,
+        "height": 4,
+        "gtype": "gage",
+        "title": "Temp",
+        "label": "F",
+        "format": "{{value}}",
+        "min": "50",
+        "max": "120",
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "diff": false,
+        "className": "",
+        "x": 390,
+        "y": 420,
+        "wires": []
+    },
+    {
+        "id": "c757b7fc27749e09",
+        "type": "function",
+        "z": "6e8c89a756076ea7",
+        "name": "temp",
+        "func": "msg.payload = msg.payload.Temperature;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 250,
+        "y": 420,
+        "wires": [
+            [
+                "eca8fd0713d371cd"
+            ]
+        ]
+    },
+    {
+        "id": "5d7267d48756fc07",
+        "type": "ui_gauge",
+        "z": "6e8c89a756076ea7",
+        "name": "",
+        "group": "ae52c3f0adf3c0d3",
+        "order": 1,
+        "width": 5,
+        "height": 4,
+        "gtype": "wave",
+        "title": "Volume",
+        "label": "G",
+        "format": "{{value}}",
+        "min": "0",
+        "max": "5000",
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "diff": false,
+        "className": "background:red",
+        "x": 400,
+        "y": 480,
+        "wires": []
+    },
+    {
+        "id": "93d89ab586458d0f",
+        "type": "function",
+        "z": "6e8c89a756076ea7",
+        "name": "Volume",
+        "func": "msg.payload = msg.payload.Volume;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 260,
+        "y": 480,
+        "wires": [
+            [
+                "5d7267d48756fc07"
+            ]
+        ]
+    },
+    {
+        "id": "e8a253c232907ffe",
+        "type": "ui_gauge",
+        "z": "6e8c89a756076ea7",
+        "name": "",
+        "group": "d92b3c6a266aba67",
+        "order": 1,
+        "width": 5,
+        "height": 4,
+        "gtype": "wave",
+        "title": "Water",
+        "label": "G",
+        "format": "{{value}}",
+        "min": "0",
+        "max": "15",
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "diff": false,
+        "className": "class1",
+        "x": 390,
+        "y": 540,
+        "wires": []
+    },
+    {
+        "id": "08c1eeeb3590199d",
+        "type": "ui_gauge",
+        "z": "6e8c89a756076ea7",
+        "name": "",
+        "group": "bf03bb18b3ba2124",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "gtype": "gage",
+        "title": "inches",
+        "label": "IN",
+        "format": "{{value}}",
+        "min": "5",
+        "max": "20",
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "diff": false,
+        "className": "",
+        "x": 390,
+        "y": 600,
+        "wires": []
+    },
+    {
+        "id": "a12c014b1df750ef",
+        "type": "ui_template",
+        "z": "6e8c89a756076ea7",
+        "group": "d92b3c6a266aba67",
+        "name": "",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "format": "<style>\n    //.nr-dashboard-gauge circle { fill: yellow !important;}\n</style>\n\n<style>\n.class1 { fill: yellow !important;}\nclass1{fill:red;}\nsvg.off2 { fill: red;}\nsvg.normal1 { fill: red;}\nsvg.fire1 { fill: yellow;animation-duration: 1s;animation-iteration-count: infinite;animation-name: anim11;}\n </style>\n ",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": true,
+        "templateScope": "global",
+        "className": "",
+        "x": 580,
+        "y": 540,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "43294b764ad1c94e",
+        "type": "function",
+        "z": "6e8c89a756076ea7",
+        "name": "Water",
+        "func": "msg.className=\"class1\"\nmsg.payload=(msg.payload[\"Water Volume\"]/100).toFixed(2);\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 230,
+        "y": 540,
+        "wires": [
+            [
+                "e8a253c232907ffe"
+            ]
+        ]
+    },
+    {
+        "id": "0e9b50acc6d678ed",
+        "type": "function",
+        "z": "6e8c89a756076ea7",
+        "name": "inches",
+        "func": "msg.className=\"class1\"\nmsg.payload=msg.payload[\"Height\"].toFixed(2);\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 230,
+        "y": 600,
+        "wires": [
+            [
+                "08c1eeeb3590199d"
+            ]
+        ]
+    },
+    {
+        "id": "f336b9d02f416736",
+        "type": "fs-list",
+        "z": "6e8c89a756076ea7",
+        "name": "",
+        "path": "C:\\Users\\meltahawey\\Desktop\\ftptest\\f2\\",
+        "pathType": "str",
+        "pattern": "deliveries*.*",
+        "patternType": "str",
+        "filter": "all",
+        "recursive": false,
+        "follow": true,
+        "property": "payload",
+        "propertyType": "msg",
+        "x": 240,
+        "y": 880,
+        "wires": [
+            [
+                "98d8a70c297a9671"
+            ]
+        ]
+    },
+    {
+        "id": "98d8a70c297a9671",
+        "type": "function",
+        "z": "6e8c89a756076ea7",
+        "name": "function 7",
+        "func": "let m=msg.payload;\nlet kK=[];\n//for (let i=0;i<m.length;i++){kK[i]=m[i].substring(m[i].length-10,m[i].length-4);}\nmsg.payload=\"C:\\\\Users\\\\meltahawey\\\\Desktop\\\\ftptest\\\\f2\\\\\"+m[m.length-1];\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 380,
+        "y": 880,
+        "wires": [
+            [
+                "12314227e615c24c"
+            ]
+        ]
+    },
+    {
+        "id": "12314227e615c24c",
+        "type": "file in",
+        "z": "6e8c89a756076ea7",
+        "name": "Read CSV",
+        "filename": "payload",
+        "filenameType": "msg",
+        "format": "utf8",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "none",
+        "allProps": false,
+        "x": 290,
+        "y": 820,
+        "wires": [
+            [
+                "219d292dc6610299"
+            ]
+        ]
+    },
+    {
+        "id": "219d292dc6610299",
+        "type": "csv",
+        "z": "6e8c89a756076ea7",
+        "name": "Parse CSV",
+        "sep": ",",
+        "hdrin": true,
+        "hdrout": "none",
+        "multi": "multiobj",
+        "ret": "array",
+        "temp": "",
+        "skip": 0,
+        "strings": true,
+        "x": 470,
+        "y": 820,
+        "wires": [
+            [
+                "0e504ae3566cab61"
+            ]
+        ]
+    },
+    {
+        "id": "0e504ae3566cab61",
+        "type": "function",
+        "z": "6e8c89a756076ea7",
+        "name": "function 8",
+        "func": "//let m=msg.payload[0];\n//F=(C × 9/5) + 32\n//in=mm *0.03937;\n//G=L *0.264172;\nmsg.payload={\nStartDateTime:msg.payload[0].StartDateTime,\nStartVolume:msg.payload[0].StartVolume,\nStartWater:msg.payload[0].StartWater,\nStartTemperature:msg.payload[0].StartTemperature,\nEndDateTime:msg.payload[0].EndDateTime,\nEndVolume:msg.payload[0].EndVolume,\nEndWater:msg.payload[0].EndWater,\nEndTemperature:msg.payload[0].EndTemperature,\n    Quantity: msg.payload[0].Quantity\n    }\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 580,
+        "y": 880,
+        "wires": [
+            [
+                "fa18d559bedc32df",
+                "6e47ff63e8c7737b",
+                "c8d10a3dfe578d8f",
+                "0cd54371c806c1e5",
+                "6ed2c57176be14a0",
+                "21654845a386d156",
+                "e6d8741b8ebba80a",
+                "7009d72f966dd55a",
+                "1ceaa347e7b182b0",
+                "f23032529e849db6"
+            ]
+        ]
+    },
+    {
+        "id": "fa18d559bedc32df",
+        "type": "debug",
+        "z": "6e8c89a756076ea7",
+        "name": "debug 4",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 680,
+        "y": 820,
+        "wires": []
+    },
+    {
+        "id": "6e47ff63e8c7737b",
+        "type": "function",
+        "z": "6e8c89a756076ea7",
+        "name": "StartDateTime",
+        "func": "msg.payload = msg.payload.StartDateTime;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 260,
+        "y": 960,
+        "wires": [
+            [
+                "9a5daaf84ae442f9"
+            ]
+        ]
+    },
+    {
+        "id": "c8d10a3dfe578d8f",
+        "type": "function",
+        "z": "6e8c89a756076ea7",
+        "name": "StartVolume",
+        "func": "msg.payload = msg.payload.StartVolume;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 250,
+        "y": 1000,
+        "wires": [
+            [
+                "5a285daf6352874e"
+            ]
+        ]
+    },
+    {
+        "id": "0cd54371c806c1e5",
+        "type": "function",
+        "z": "6e8c89a756076ea7",
+        "name": "StartWater",
+        "func": "msg.payload = msg.payload.StartWater;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 250,
+        "y": 1040,
+        "wires": [
+            [
+                "0a7e05ecf8312b62"
+            ]
+        ]
+    },
+    {
+        "id": "6ed2c57176be14a0",
+        "type": "function",
+        "z": "6e8c89a756076ea7",
+        "name": "StartTemperature",
+        "func": "msg.payload = msg.payload.StartTemperature;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 270,
+        "y": 1080,
+        "wires": [
+            [
+                "3fb40d40eab17a08"
+            ]
+        ]
+    },
+    {
+        "id": "21654845a386d156",
+        "type": "function",
+        "z": "6e8c89a756076ea7",
+        "name": "EndDateTime",
+        "func": "msg.payload = msg.payload.EndDateTime;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 260,
+        "y": 1120,
+        "wires": [
+            [
+                "55b034105b523141"
+            ]
+        ]
+    },
+    {
+        "id": "e6d8741b8ebba80a",
+        "type": "function",
+        "z": "6e8c89a756076ea7",
+        "name": "EndVolume",
+        "func": "msg.payload = msg.payload.EndVolume;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 250,
+        "y": 1160,
+        "wires": [
+            [
+                "d2d843aae35bbbeb"
+            ]
+        ]
+    },
+    {
+        "id": "7009d72f966dd55a",
+        "type": "function",
+        "z": "6e8c89a756076ea7",
+        "name": "EndWater",
+        "func": "msg.payload = msg.payload.EndWater;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 240,
+        "y": 1200,
+        "wires": [
+            [
+                "f59ba0697b2074a3"
+            ]
+        ]
+    },
+    {
+        "id": "1ceaa347e7b182b0",
+        "type": "function",
+        "z": "6e8c89a756076ea7",
+        "name": "EndTemperature",
+        "func": "msg.payload = msg.payload.EndTemperature;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 270,
+        "y": 1240,
+        "wires": [
+            [
+                "bcdb845bdcc4b5fc"
+            ]
+        ]
+    },
+    {
+        "id": "f23032529e849db6",
+        "type": "function",
+        "z": "6e8c89a756076ea7",
+        "name": "Quantity",
+        "func": "msg.payload = msg.payload.Quantity;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 240,
+        "y": 1280,
+        "wires": [
+            [
+                "86a551624789adcc"
+            ]
+        ]
+    },
+    {
+        "id": "9a5daaf84ae442f9",
+        "type": "ui_text",
+        "z": "6e8c89a756076ea7",
+        "group": "7ba3a94c9bfb2d34",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "Start Time",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "className": "",
+        "style": false,
+        "font": "",
+        "fontSize": 16,
+        "color": "#000000",
+        "x": 470,
+        "y": 960,
+        "wires": []
+    },
+    {
+        "id": "5a285daf6352874e",
+        "type": "ui_text",
+        "z": "6e8c89a756076ea7",
+        "group": "7ba3a94c9bfb2d34",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "Start Volume",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "className": "",
+        "style": false,
+        "font": "",
+        "fontSize": 16,
+        "color": "#000000",
+        "x": 470,
+        "y": 1000,
+        "wires": []
+    },
+    {
+        "id": "0a7e05ecf8312b62",
+        "type": "ui_text",
+        "z": "6e8c89a756076ea7",
+        "group": "7ba3a94c9bfb2d34",
+        "order": 3,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "Start Water",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "className": "",
+        "style": false,
+        "font": "",
+        "fontSize": 16,
+        "color": "#000000",
+        "x": 470,
+        "y": 1040,
+        "wires": []
+    },
+    {
+        "id": "3fb40d40eab17a08",
+        "type": "ui_text",
+        "z": "6e8c89a756076ea7",
+        "group": "7ba3a94c9bfb2d34",
+        "order": 4,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "Start Temperature",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "className": "",
+        "style": false,
+        "font": "",
+        "fontSize": 16,
+        "color": "#000000",
+        "x": 490,
+        "y": 1080,
+        "wires": []
+    },
+    {
+        "id": "55b034105b523141",
+        "type": "ui_text",
+        "z": "6e8c89a756076ea7",
+        "group": "61b121ce1704bc6b",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "End DateTime",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "className": "",
+        "style": false,
+        "font": "",
+        "fontSize": 16,
+        "color": "#000000",
+        "x": 480,
+        "y": 1120,
+        "wires": []
+    },
+    {
+        "id": "d2d843aae35bbbeb",
+        "type": "ui_text",
+        "z": "6e8c89a756076ea7",
+        "group": "61b121ce1704bc6b",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "End Volume",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "className": "",
+        "style": false,
+        "font": "",
+        "fontSize": 16,
+        "color": "#000000",
+        "x": 470,
+        "y": 1160,
+        "wires": []
+    },
+    {
+        "id": "f59ba0697b2074a3",
+        "type": "ui_text",
+        "z": "6e8c89a756076ea7",
+        "group": "61b121ce1704bc6b",
+        "order": 3,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "End Water",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "className": "",
+        "style": false,
+        "font": "",
+        "fontSize": 16,
+        "color": "#000000",
+        "x": 470,
+        "y": 1200,
+        "wires": []
+    },
+    {
+        "id": "bcdb845bdcc4b5fc",
+        "type": "ui_text",
+        "z": "6e8c89a756076ea7",
+        "group": "61b121ce1704bc6b",
+        "order": 4,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "End Temperature",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "className": "",
+        "style": false,
+        "font": "",
+        "fontSize": 16,
+        "color": "#000000",
+        "x": 490,
+        "y": 1240,
+        "wires": []
+    },
+    {
+        "id": "86a551624789adcc",
+        "type": "ui_text",
+        "z": "6e8c89a756076ea7",
+        "group": "61b121ce1704bc6b",
+        "order": 5,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "Quantity",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "className": "",
+        "style": false,
+        "font": "",
+        "fontSize": 16,
+        "color": "#000000",
+        "x": 480,
+        "y": 1280,
+        "wires": []
+    },
+    {
+        "id": "c185fd3c0889c0f1",
+        "type": "ui_group",
+        "name": "Temp",
+        "tab": "1ddc205f015a83bc",
+        "order": 1,
+        "disp": true,
+        "width": 5,
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "ae52c3f0adf3c0d3",
+        "type": "ui_group",
+        "name": "Volume",
+        "tab": "1ddc205f015a83bc",
+        "order": 2,
+        "disp": true,
+        "width": 5,
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "d92b3c6a266aba67",
+        "type": "ui_group",
+        "name": "Water",
+        "tab": "1ddc205f015a83bc",
+        "order": 3,
+        "disp": true,
+        "width": 5,
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "bf03bb18b3ba2124",
+        "type": "ui_group",
+        "name": "Inches",
+        "tab": "1ddc205f015a83bc",
+        "order": 4,
+        "disp": true,
+        "width": 5,
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "7ba3a94c9bfb2d34",
+        "type": "ui_group",
+        "name": "Group 1",
+        "tab": "1ddc205f015a83bc",
+        "order": 6,
+        "disp": false,
+        "width": 6,
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "61b121ce1704bc6b",
+        "type": "ui_group",
+        "name": "Group 2",
+        "tab": "1ddc205f015a83bc",
+        "order": 7,
+        "disp": false,
+        "width": 6,
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "1ddc205f015a83bc",
+        "type": "ui_tab",
+        "name": "ProGauge",
+        "icon": "dashboard",
+        "order": 2,
+        "disabled": false,
+        "hidden": false
+    },
+    {
+        "id": "8143a571b5dec001",
+        "type": "global-config",
+        "env": [],
+        "modules": {
+            "node-red-contrib-filesystem": "1.0.0",
+            "node-red-dashboard": "3.6.6"
+        }
+    }
+]
